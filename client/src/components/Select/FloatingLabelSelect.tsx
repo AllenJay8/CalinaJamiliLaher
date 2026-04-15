@@ -7,7 +7,7 @@ interface FloatingLabelSelectProps {
     newLabelClassName?: string;
     labelClassName?: string;
     name?: string;
-    value?: string | any;
+    value?: string | number;
     onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
     required?: boolean;
     autoFocus?: boolean;

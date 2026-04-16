@@ -6,10 +6,10 @@ import { HeaderProvider } from "../contexts/HeaderContext";
 
 const LayoutContent = () => {
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="min-h-screen bg-white dark:bg-gray-900">
             <AppHeader />
             <AppSidebar />
-            <main className="p-4 pt-16 sm:ml-64">
+            <main className="min-h-screen bg-white p-4 pt-20 sm:ml-64">
                 <Outlet />
             </main>
         </div>

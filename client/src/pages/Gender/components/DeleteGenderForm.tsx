@@ -12,7 +12,7 @@ const DeleteGenderForm = () => {
         <div className="flex justify-end gap-2">
           <BackButton label="Back" path="/" />
           <SubmitButton label="Save Gender" className="bg-red-600" />
-        </div>
+        </div> 
       </form>
     </>
   );

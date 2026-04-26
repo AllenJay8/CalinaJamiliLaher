@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import AppLayout from "../../layout/AppLayout";
-import { GenderMainPage } from "../Gender/GenderMainPage";
+import GenderMainPage  from "../Gender/GenderMainPage";
 import EditGenderPage from "../Gender/components/EditGenderPage";
 import DeleteGenderPage from "../Gender/components/DeleteGenderPage";
 import UserMainPage from "../User/UserMainPage";

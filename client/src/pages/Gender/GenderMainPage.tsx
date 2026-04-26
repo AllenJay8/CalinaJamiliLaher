@@ -1,46 +1,44 @@
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import AddGenderForm from "./components/AddGenderForm";
 import GenderList from "./components/GenderList";
 import ToastMessage from "../../components/ToastMessage/ToastMessage";
+import { useToastMessage } from "../../hooks/useToastMessage";
+import { useRefresh } from "../../hooks/useRefresh";
 
-export const GenderMainPage = () => {
-    const [toastMessage, setToastMessage] = useState("");
-    const [toastMessageIsVisible, setToastMessageIsVisible] = useState(false);
+const GenderMainPage = () => {
+  const {
+    message: toastMessage,
+    isVisible: toastMessageIsVisible,
+    showToastMessage,
+    closeToastMessage,
+  } = useToastMessage("", false);
 
-    const handleShowToastMessage = (message: string) => {
-        setToastMessage(message);
-        setToastMessageIsVisible(true);
-    };
+  const { refresh, handleRefresh } = useRefresh(false);
 
-    const handleCloseToastMessage = () => {
-        setToastMessage("");
-        setToastMessageIsVisible(false);
-    };
+  useEffect(() => {
+    document.title = "Gender Main Page";
+  }, []);
 
-    useEffect(() => {
-        document.title = "Gender Main Page";
-    }, []);
-
-    return (
-        <>
-            <ToastMessage
-                message={toastMessage}
-                isVisible={toastMessageIsVisible}
-                onClose={handleCloseToastMessage}
-            />
-            <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2 md:col-span-1">
-                    <AddGenderForm onGenderAdded={(message) => {
-                        handleShowToastMessage(message);
-                    } }
-                    />
-                </div>
-                <div className="col-span-2 md:col-span-1">
-                    <GenderList />
-                </div>
-            </div>
-        </>
-    );
+  return (
+    <>
+      <ToastMessage
+        message={toastMessage}
+        isVisible={toastMessageIsVisible}
+        onClose={closeToastMessage}
+      />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-2 md:col-span-1">
+          <AddGenderForm
+            onGenderAdded={showToastMessage}
+            refreshKey={handleRefresh}
+          />
+        </div>
+        <div className="col-span-2 md:col-span-1">
+          <GenderList refreshKey={refresh} />
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default GenderMainPage;

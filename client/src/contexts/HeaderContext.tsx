@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type FC, type ReactNode  } from "react"
+import { createContext, useContext, useState, type FC, type ReactNode } from "react"
 
 type HeaderContextType = {
     isOpen: boolean
@@ -7,26 +7,25 @@ type HeaderContextType = {
 
 const HeaderContext = createContext<HeaderContextType | undefined>(undefined)
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useHeader = () => {
     const context = useContext(HeaderContext)
 
-    if(!context) {
+    if (!context) {
         throw new Error('useHeader must be used within a HeaderProvider')
     }
 
     return context
 }
 
-export const HeaderProvider: FC<{children: ReactNode}> =({children}) => {
+export const HeaderProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [isOpen, setIsOpen] = useState(false)
 
     const toggleUserMenu = () => {
-        setIsOpen ((prev)=> !prev)
+        setIsOpen((prev) => !prev)
     }
 
     return (
-        <HeaderContext.Provider value = {{isOpen, toggleUserMenu}}>
+        <HeaderContext.Provider value={{ isOpen, toggleUserMenu }}>
             {children}
         </HeaderContext.Provider>
     )

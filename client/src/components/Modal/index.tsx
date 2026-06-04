@@ -1,70 +1,69 @@
-import type { FC, ReactNode } from "react";
-import { useEffect } from "react";
-import ModalCloseButton from "../Button/ModalCloseButton";
+import { useEffect, useRef, type FC, type ReactNode } from "react"
+import ModalCloseButton from "../Button/ModalCloseButton"
 
 interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  className?: string;
-  children: ReactNode;
-  showCloseButton?: boolean;
-  isFullScreen?: boolean;
+    isOpen: boolean
+    onClose: () => void
+    className?: string
+    children: ReactNode
+    showCloseButton?: boolean
+    isFullScreen?: boolean
 }
 
-const Modal: FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  className,
-  children,
-  showCloseButton,
-  isFullScreen,
-}) => {
-  useEffect(() => {
-    if (!isOpen) {
-      return undefined;
+const Modal: FC<ModalProps> = ({ isOpen, onClose, className, children, showCloseButton, isFullScreen }) => {
+    const modalRef = useRef<HTMLDivElement>(null)
+
+    const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+            onClose()
+        }
     }
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
 
-    document.addEventListener("keydown", handleEscape);
-    document.body.style.overflow = "hidden";
+    const contentClasses = isFullScreen ? 'relative w-full h-full rounded-lg bg-white flex flex-col' : 'relative w-full sm:max-w-md md:max-w-lg lg:max-w-2xl rounded-lg bg-white max-h-[90vh] flex flex-col'
 
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen, onClose]);
+    useEffect(() => {
+        if (isOpen) {
+            document.addEventListener("keydown", handleEscape);
+        }
 
-  if (!isOpen) {
-    return null;
-  }
+        return () => {
+            document.removeEventListener("keydown", handleEscape);
+        };
+    }, [isOpen, onClose]);
 
-  const contentClasses = isFullScreen
-    ? "relative h-full w-full rounded-lg bg-white"
-    : "relative w-full max-h-[90vh] rounded-lg bg-white sm:max-w-md md:max-w-lg lg:max-w-2xl";
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
 
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4"
-      onClick={onClose}
-    >
-      {!isFullScreen && (
-        <div className="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-lg" />
-      )}
-      <div
-        className={`${contentClasses} ${className ?? ""}`}
-        onClick={(event) => event.stopPropagation()}
-      >
-        {showCloseButton && <ModalCloseButton onClose={onClose} />}
-        <div className="flex-1 overflow-y-auto p-4">{children}</div>
-      </div>
-    </div>
-  );
-};
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, [isOpen]);
 
-export default Modal;
+    if (!isOpen) return null
 
+    return (
+        <>
+            <div className="fixed inset-0 flex items-center justify-center overflow-y-auto modal z-99999 p-4">
+                {!isFullScreen && (
+                    <div className="fixed inset-0 w-full h-full bg-gray-400/50 backdrop-blur-lg" />
+                )}
+                <div
+                    ref={modalRef}
+                    className={`${contentClasses} ${className}`}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {showCloseButton && <ModalCloseButton onClose={onClose} />}
+
+                    <div className="flex-1 overflow-y-auto p-4">{children}</div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+export default Modal

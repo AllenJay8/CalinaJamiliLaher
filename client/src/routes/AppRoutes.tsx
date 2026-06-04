@@ -1,24 +1,33 @@
-import { Route, Routes } from "react-router-dom";
-import AppLayout from "../layout/AppLayout";
-import { GenderMainPage } from "../pages/Gender/GenderMainPage";
-import EditGenderPage from "../pages/Gender/components/EditGenderPage";
-import DeleteGenderPage from "../pages/Gender/components/DeleteGenderPage";
-import UserMainPage from "../pages/User/UserMainPage";
+import { Route, Routes } from "react-router-dom"
+import AppLayout from "../layout/AppLayout"
+import GenderMainPage from "../pages/Gender/GenderMainPage"
+import EditGenderPage from "../pages/Gender/EditGenderPage"
+import DeleteGenderPage from "../pages/Gender/DeleteGenderPage"
+import UserMainPage from "../pages/user/UserMainPage"
+import LoginPage from "../pages/Auth/LoginPage"
+import { AuthProvider } from "../contexts/AuthContext"
+import ProtectedRoute from "./ProtectedRoute"
+
+
 
 const AppRoutes = () => {
-  return (
-    <>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<GenderMainPage />} />
-          <Route path="/gender/edit" element={<EditGenderPage />} />
-          <Route path="/gender/delete" element={<DeleteGenderPage />} />
-          <Route path="/user" element={<UserMainPage />} />
-          <Route path="/users" element={<UserMainPage />} />
-        </Route>
-      </Routes>
-    </>
-  );
-};
+    return (
+        <>
+            <AuthProvider>
 
-export default AppRoutes;
+                <Routes>
+                    <Route path="/" element={<LoginPage />} />
+                    <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                        <Route path="/genders" element={<GenderMainPage />} />
+                        <Route path="/gender/edit/:gender_id" element={<EditGenderPage />} />
+                        <Route path="/gender/delete/:gender_id" element={<DeleteGenderPage />} />
+                        <Route path="/users" element={<UserMainPage />} />
+
+                    </Route>
+                </Routes>
+            </AuthProvider>
+        </>
+    )
+}
+
+export default AppRoutes

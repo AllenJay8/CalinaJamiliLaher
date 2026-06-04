@@ -1,12 +1,9 @@
-import axios, { AxiosHeaders } from "axios";
+import axios from "axios";
 
-const AxiosInstance = axios.create({
-    baseURL: "http://127.0.0.1:8000/api"
-});
+const AxiosInstance = axios.create({ baseURL: "http://127.0.0.1:8000/api" });
 
 AxiosInstance.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
-    config.headers = config.headers || new AxiosHeaders();
 
     if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
@@ -26,7 +23,7 @@ AxiosInstance.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (!error.response || error.response.status !== 422) {
+        if (error.response.status !== 422) {
             console.error("Unexpected response error: ", error);
         }
 

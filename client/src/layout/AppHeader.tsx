@@ -1,84 +1,126 @@
-import { Link } from "react-router-dom"
-import { useHeader } from "../contexts/HeaderContext"
-import { useSidebar } from "../contexts/SidebarContext"
+import { useNavigate } from "react-router-dom";
+import { useHeader } from "../contexts/HeaderContext";
+import { useSidebar } from "../contexts/SidebarContext";
+import { useState, type MouseEvent } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 const AppHeader = () => {
-  const {isOpen, toggleUserMenu} = useHeader()
-  const { toggleSidebar} = useSidebar()
+    const { isOpen, toggleUserMenu } = useHeader();
+    const { toggleSidebar } = useSidebar();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
-  return (
-    <> 
-    {isOpen && (
-      <div className="fixed inset-0 z-40" onClick={toggleUserMenu} />
-    )}
+    const handleLogout = async (e: MouseEvent) => {
+        try {
+            e.preventDefault();
+            setIsLoading(true);
+            await logout();
+            navigate("/");
+        } catch (error) {
+            console.error(
+                "Unexpected server error occurred during logging user out: ",
+                error
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    const handleUserFullNameFormat = () => {
+        if (!user || !user.user) return "";
 
-        <nav className="fixed inset-x-0 top-0 z-50 flex h-16 shrink-0 border-b border-gray-700 bg-gray-800 dark:border-gray-600 dark:bg-gray-800">
-  <div className="flex w-full min-w-0 items-center justify-between px-3 lg:px-5">
-    <div className="flex min-w-0 flex-1 items-center justify-start gap-2 rtl:justify-end">
-        <button 
-        data-drawer-target="top-bar-sidebar" 
-        data-drawer-toggle="top-bar-sidebar" 
-        aria-controls="top-bar-sidebar" 
-        type="button"
-        onClick={toggleSidebar} 
-        className="inline-flex shrink-0 rounded-lg p-2 text-gray-200 hover:bg-gray-700 focus:ring-4 focus:ring-gray-600 focus:outline-none sm:hidden"
-        >
-            <span className="sr-only">Open sidebar</span>
-            <svg 
-            className="h-6 w-6" 
-            aria-hidden="true" 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="24" height="24" 
-            fill="none" 
-            viewBox="0 0 24 24">
-  <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M5 7h14M5 12h14M5 17h10"/>
-   </svg>
-         </button>
-        <a href="https://flowbite.com" className="flex min-w-0 items-center md:me-24">
-          <img src="https://flowbite.com/docs/images/logo.svg" className="me-2 h-6 shrink-0 dark:brightness-0 dark:invert sm:me-3" alt="FlowBite Logo" />
-          <span className="truncate text-lg font-semibold text-white">Flowbite</span>
-        </a>
-      </div>
-      <div className="flex items-center">
-          <div className="relative ms-3 flex items-center">
-            <div>
-              <button 
-              type="button"
-              onClick={toggleUserMenu} 
-              className="flex rounded-full text-sm ring-2 ring-gray-600 focus:ring-4 focus:ring-gray-500 focus:outline-none" aria-expanded={isOpen} data-dropdown-toggle="dropdown-user">
-                <span className="sr-only">Open user menu</span>
-                <img className="h-8 w-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo"/>
-              </button>
-            </div>
+        let fullName = `${user.user.last_name}, ${user.user.first_name}`;
 
-            <div
-              className={`absolute inset-e-0 top-full z-50 mt-2 min-w-44 rounded-lg border border-gray-600 bg-gray-700 shadow-lg ${isOpen ? "block" : "hidden"}`}
-              id="dropdown-user"
-            >
-              <div className="border-b border-gray-600 px-4 py-3" role="none">
-                <p className="text-sm font-medium text-white" role="none">
-                  Neil Sims
-                </p>
-                <p className="truncate text-sm text-gray-300" role="none">
-                  neil.sims@flowbite.com
-                </p>
-              </div>
-              <ul className="p-2 text-sm font-medium text-gray-200" role="none">
+        if (user.user.middle_name) {
+            fullName += ` ${user.user.middle_name.charAt(0)}.`;
+        }
 
-                <li>
-                  <Link to="#" className="inline-flex w-full items-center rounded p-2 hover:bg-gray-600 hover:text-white" role="menuitem">Sign out</Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-    </div>
-</nav>
+        if (user.user.suffix_name) {
+            fullName += ` ${user.user.suffix_name}`;
+        }
 
-    
-   
-    </>
-  )
-}
+        return fullName;
+    };
+    return (
+        <>
+            {isOpen && (
+                <div className="fixed inset-0 z-40" onClick={toggleUserMenu} />
+            )}
 
-export default AppHeader
+            <nav className="fixed top-0 z-50 w-full bg-[#1e2536] border-b border-[#2e3650]">
+                <div className="px-3 py-3 lg:px-5 lg:pl-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-start rtl:justify-end">
+                            <button
+                                data-drawer-target="top-bar-sidebar"
+                                data-drawer-toggle="top-bar-sidebar"
+                                aria-controls="top-bar-sidebar"
+                                type="button"
+                                onClick={toggleSidebar}
+                                className="sm:hidden text-gray-300 bg-transparent border border-transparent hover:bg-[#2e3650] focus:ring-2 focus:ring-[#3a4460] rounded p-2 focus:outline-none"
+                            >
+                                <span className="sr-only">Open sidebar</span>
+                                <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M5 7h14M5 12h14M5 17h10" />
+                                </svg>
+                            </button>
+
+                            <a href="https://flowbite.com" className="flex items-center ms-2 md:me-24 gap-2">
+                                <img src="https://flowbite.com/docs/images/logo.svg" className="h-7" alt="FlowBite Logo" />
+                                <span className="self-center text-lg font-semibold whitespace-nowrap text-white">
+                                    Flowbite
+                                </span>
+                            </a>
+                        </div>
+
+                        <div className="flex items-center">
+                            <div className="relative flex items-center ms-3">
+                                <button
+                                    type="button"
+                                    onClick={toggleUserMenu}
+                                    className="flex text-sm rounded-full focus:ring-2 focus:ring-gray-500"
+                                    aria-expanded={isOpen}
+                                >
+                                    <span className="sr-only">Open user menu</span>
+                                    <img
+                                        className="w-8 h-8 rounded-full object-cover"
+                                        src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                                        alt="user photo"
+                                    />
+                                </button>
+
+                                {isOpen && (
+                                    <div
+                                        className="absolute right-0 top-10 min-w-[200px] z-50 text-base list-none bg-white divide-y divide-gray-100 rounded shadow-lg dark:bg-gray-700 dark:divide-gray-600"
+                                        id="dropdown-user"
+                                    >
+                                        <div className="px-4 py-3" role="none">
+                                            <p className="text-sm text-gray-900 dark:text-white" role="none">
+                                                {handleUserFullNameFormat()}
+                                            </p>
+                                        </div>
+                                        <ul className="p-2 text-sm text-gray-700 dark:text-gray-200" role="none">
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white w-full text-start cursor-pointer disabled:cursor-not-allowed"
+                                                    role="menuitem"
+                                                    onClick={handleLogout}
+                                                    disabled={isLoading}
+                                                >
+                                                    {isLoading ? "Signing Out..." : "Sign Out"}
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </>
+    );
+};
+
+export default AppHeader;
